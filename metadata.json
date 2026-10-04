@@ -1,0 +1,6 @@
+{
+  "name": "SmartCrowd - Real-Time Crowd Queue & Crowd Management System",
+  "description": "Monitor crowd density, manage queues, reduce waiting time, optimize staff allocation, and improve safety with real-time insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
