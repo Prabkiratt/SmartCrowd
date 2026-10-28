@@ -164,11 +164,32 @@ export function getQueueRecommendation(queue: QueueItem): {
   };
 }
 
-// 1. INITIAL ZONES (Matches Demo Mode requirements)
+// Pan-India Operational Hubs
+export interface IndianHub {
+  id: string;
+  name: string;
+  city: string;
+  state: string;
+  category: 'Hospital' | 'Temple / Religious' | 'Metro & Transit' | 'Airport Terminal' | 'Retail Hub';
+  activeVisitors: number;
+}
+
+export const INDIAN_HUBS: IndianHub[] = [
+  { id: 'hub-delhi', name: 'AIIMS Central OPD & Emergency', city: 'New Delhi', state: 'Delhi NCR', category: 'Hospital', activeVisitors: 640 },
+  { id: 'hub-mumbai', name: 'Siddhi Vinayak Temple & Darshan Complex', city: 'Mumbai', state: 'Maharashtra', category: 'Temple / Religious', activeVisitors: 820 },
+  { id: 'hub-bengaluru', name: 'Kempegowda Metro Interchange Hub', city: 'Bengaluru', state: 'Karnataka', category: 'Metro & Transit', activeVisitors: 510 },
+  { id: 'hub-varanasi', name: 'Kashi Vishwanath Corridor & Queue Plaza', city: 'Varanasi', state: 'Uttar Pradesh', category: 'Temple / Religious', activeVisitors: 780 },
+  { id: 'hub-hyderabad', name: 'Rajiv Gandhi International Airport Security', city: 'Hyderabad', state: 'Telangana', category: 'Airport Terminal', activeVisitors: 430 },
+  { id: 'hub-kolkata', name: 'Howrah Junction Passenger Concourse', city: 'Kolkata', state: 'West Bengal', category: 'Metro & Transit', activeVisitors: 950 },
+  { id: 'hub-chandigarh', name: 'PGIMER Regional Super-Specialty OPD', city: 'Chandigarh', state: 'Punjab / Haryana', category: 'Hospital', activeVisitors: 530 },
+  { id: 'hub-chennai', name: 'Chennai Central Suburban Ticket Plaza', city: 'Chennai', state: 'Tamil Nadu', category: 'Metro & Transit', activeVisitors: 460 },
+];
+
+// 1. INITIAL ZONES (Pan-India High Footfall Venue Zones)
 export const INITIAL_ZONES: Zone[] = [
   {
     id: 'zone-1',
-    name: 'Main Entrance',
+    name: 'Main Security & Entry Gate',
     currentPeople: 145,
     capacity: 200,
     warningThreshold: 140,
@@ -178,7 +199,7 @@ export const INITIAL_ZONES: Zone[] = [
   },
   {
     id: 'zone-2',
-    name: 'Waiting Area',
+    name: 'Central Waiting Concourse',
     currentPeople: 175,
     capacity: 200,
     warningThreshold: 150,
@@ -188,7 +209,7 @@ export const INITIAL_ZONES: Zone[] = [
   },
   {
     id: 'zone-3',
-    name: 'Ticket Counter',
+    name: 'Digital Token & Ticket Counter',
     currentPeople: 85,
     capacity: 100,
     warningThreshold: 70,
@@ -198,7 +219,7 @@ export const INITIAL_ZONES: Zone[] = [
   },
   {
     id: 'zone-4',
-    name: 'Food Court',
+    name: 'Food Court & Refreshments',
     currentPeople: 60,
     capacity: 150,
     warningThreshold: 110,
@@ -208,7 +229,7 @@ export const INITIAL_ZONES: Zone[] = [
   },
   {
     id: 'zone-5',
-    name: 'Service Area',
+    name: 'Express Verification & Darshan Lane',
     currentPeople: 95,
     capacity: 120,
     warningThreshold: 85,
@@ -218,7 +239,7 @@ export const INITIAL_ZONES: Zone[] = [
   },
   {
     id: 'zone-6',
-    name: 'Exit',
+    name: 'Exit Turnstiles & Transit Bay',
     currentPeople: 40,
     capacity: 150,
     warningThreshold: 110,
@@ -242,7 +263,7 @@ export const INITIAL_LIVE_AREAS: LiveArea[] = [
 export const INITIAL_QUEUES: QueueItem[] = [
   {
     id: 'queue-1',
-    name: 'Ticket Counter',
+    name: 'OPD & Patient Token Counter',
     currentPeople: 45,
     avgWaitMinutes: 18,
     activeCounters: 2,
@@ -251,7 +272,7 @@ export const INITIAL_QUEUES: QueueItem[] = [
   },
   {
     id: 'queue-2',
-    name: 'Registration',
+    name: 'Temple Darshan & Token Verification',
     currentPeople: 25,
     avgWaitMinutes: 10,
     activeCounters: 2,
@@ -260,7 +281,7 @@ export const INITIAL_QUEUES: QueueItem[] = [
   },
   {
     id: 'queue-3',
-    name: 'Service Counter',
+    name: 'Metro Security & Transit Check',
     currentPeople: 52,
     avgWaitMinutes: 24,
     activeCounters: 2,
@@ -269,7 +290,7 @@ export const INITIAL_QUEUES: QueueItem[] = [
   },
   {
     id: 'queue-4',
-    name: 'Express Inquiry Desk',
+    name: 'Express Customer & Helpdesk Line',
     currentPeople: 16,
     avgWaitMinutes: 6,
     activeCounters: 2,

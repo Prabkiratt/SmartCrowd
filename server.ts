@@ -100,6 +100,94 @@ async function startServer() {
     }
   });
 
+  // ============================================================================
+  // GEMINI AI CHATBOT & GOOGLE SEARCH GROUNDING ENDPOINTS
+  // ============================================================================
+  const { GoogleGenAI } = await import('@google/genai');
+  const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      },
+    },
+  });
+
+  // 1. Multi-turn AI Chatbot Endpoint (gemini-3.5-flash with conversation history & system instruction)
+  app.post('/api/gemini/chat', async (req, res) => {
+    try {
+      const { messages, venueContext } = req.body || {};
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: 'Messages array is required' });
+      }
+
+      const systemInstruction = `You are "CrowdBot", the intelligent AI queue and crowd assistant for SmartCrowd (India's live crowd & waiting time network).
+Your role:
+- Provide friendly, actionable advice on queue waiting times, counter navigation, and optimal times to visit hospitals (like AIIMS), temples (like Siddhivinayak, Kashi Vishwanath), transit stations, salons, and restaurants across India.
+- Suggest best practices to minimize wait time (e.g. taking a digital token remotely, visiting during non-peak hours, checking active counter counts).
+- Maintain helpful, polite Indian conversational tone.
+- Current Venue Context available in app: ${venueContext ? JSON.stringify(venueContext) : 'Pan-India live queues'}.`;
+
+      // Map chat history to SDK format
+      const formattedContents = messages.map((m: any) => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: String(m.content || m.text || '') }],
+      }));
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: formattedContents,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
+
+      res.json({
+        reply: response.text || 'I am processing live crowd data right now. How can I assist you with your queue ticket?',
+      });
+    } catch (error: any) {
+      console.error('Error in /api/gemini/chat:', error);
+      res.status(500).json({ error: error.message || 'Failed to generate chat response' });
+    }
+  });
+
+  // 2. Google Search Grounding Endpoint (gemini-3.5-flash with googleSearch tool for live crowd, timings, & news)
+  app.post('/api/gemini/search-crowd', async (req, res) => {
+    try {
+      const { query, city } = req.body || {};
+      if (!query) {
+        return res.status(400).json({ error: 'Search query is required' });
+      }
+
+      const prompt = `Provide the latest live public queue, peak hours, opening hours, rush advisory, or recent visitor information for: "${query}" in ${city || 'India'}. Include specific practical tips for devotees/patients/passengers visiting today.`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: prompt,
+        config: {
+          tools: [{ googleSearch: {} }],
+        },
+      });
+
+      const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+      const sources = groundingChunks
+        .filter((chunk: any) => chunk.web?.uri)
+        .map((chunk: any) => ({
+          title: chunk.web.title || chunk.web.uri,
+          url: chunk.web.uri,
+        }));
+
+      res.json({
+        summary: response.text,
+        sources,
+      });
+    } catch (error: any) {
+      console.error('Error in /api/gemini/search-crowd:', error);
+      res.status(500).json({ error: error.message || 'Failed to search crowd info' });
+    }
+  });
+
   // Vite middleware for development or static serving in production
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

@@ -17,6 +17,7 @@ export type NavTab =
   | 'dashboard'
   | 'monitoring'
   | 'queues'
+  | 'digital-tickets'
   | 'alerts'
   | 'staff'
   | 'analytics'
@@ -47,6 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'monitoring', label: 'Crowd Monitoring', icon: Users },
     { id: 'queues', label: 'Queue Management', icon: ListOrdered },
+    { id: 'digital-tickets', label: 'Digital Token & QR', icon: MapPin },
     { id: 'alerts', label: 'Alerts', icon: Bell, count: unreadAlertCount },
     { id: 'staff', label: 'Staff Management', icon: UserCheck },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },

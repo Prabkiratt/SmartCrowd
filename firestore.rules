@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles: owner can read & write their own profile
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Venues: public read, authenticated users can create/update
+    match /venues/{venueId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Digital Tickets: public read, ticket owner or authenticated users can update/create
+    match /tickets/{ticketId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isSignedIn() || request.resource.data.userId == request.auth.uid;
+    }
+  }
+}

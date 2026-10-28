@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account and profile data",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["customer", "merchant", "admin"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "email"]
+    },
+    "Venue": {
+      "title": "Venue",
+      "description": "Live venue or business queue profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "city": { "type": "string" },
+        "area": { "type": "string" },
+        "state": { "type": "string" },
+        "currentServing": { "type": "number" },
+        "lastIssuedToken": { "type": "number" },
+        "avgServiceTimeMinutes": { "type": "number" },
+        "activeCounters": { "type": "number" },
+        "isOpen": { "type": "boolean" },
+        "ownerUid": { "type": "string" }
+      },
+      "required": ["id", "name", "city", "category"]
+    },
+    "QueueTicket": {
+      "title": "QueueTicket",
+      "description": "Customer live queue ticket",
+      "type": "object",
+      "properties": {
+        "ticketId": { "type": "string" },
+        "venueId": { "type": "string" },
+        "venueName": { "type": "string" },
+        "tokenNumber": { "type": "number" },
+        "customerName": { "type": "string" },
+        "phone": { "type": "string" },
+        "partySize": { "type": "number" },
+        "userId": { "type": "string" },
+        "status": { "type": "string", "enum": ["WAITING", "SERVING_NOW", "COMPLETED", "CANCELLED"] },
+        "joinedAt": { "type": "string" },
+        "qrCodeToken": { "type": "string" }
+      },
+      "required": ["ticketId", "venueId", "tokenNumber", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Authenticated user profiles"
+    },
+    "/venues/{venueId}": {
+      "schema": "Venue",
+      "description": "Live queue venues and places across India"
+    },
+    "/tickets/{ticketId}": {
+      "schema": "QueueTicket",
+      "description": "Digital queue tokens and live customer tickets"
+    }
+  }
+}
